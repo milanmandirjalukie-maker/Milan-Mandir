@@ -5,7 +5,7 @@
 This project is prepared to launch the live Supabase app by default:
 
 - `https://your-domain/` -> `supabase-index.html`
-- `https://your-domain/offline` -> `index.html`
+- `https://your-domain/offline` -> `offline-index.html`
 
 ## Vercel Ready
 
@@ -16,7 +16,7 @@ This folder also includes:
 So Vercel can serve:
 
 - `/` -> `supabase-index.html`
-- `/offline` -> `index.html`
+- `/offline` -> `offline-index.html`
 
 ## Before Upload
 

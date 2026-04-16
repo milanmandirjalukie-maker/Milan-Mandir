@@ -2,12 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/supabase-index.html"
-    },
-    {
       "source": "/offline",
-      "destination": "/index.html"
+      "destination": "/offline-index.html"
     }
   ]
 }

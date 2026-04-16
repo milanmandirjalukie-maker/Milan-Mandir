@@ -6,7 +6,7 @@ const port = process.env.PORT || 3000;
 const host = "0.0.0.0";
 const rootDir = __dirname;
 const liveEntry = path.join(rootDir, "supabase-index.html");
-const offlineEntry = path.join(rootDir, "index.html");
+const offlineEntry = path.join(rootDir, "offline-index.html");
 
 app.use(
   express.static(rootDir, {

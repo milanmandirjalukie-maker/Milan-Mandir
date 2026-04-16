@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MILAN MANDIR Management App</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <section class="auth-shell" id="authShell">
+      <div class="auth-card">
+        <div class="hero__badge">Secure Access</div>
+        <h1 class="auth-title">MILAN MANDIR Login</h1>
+        <p class="helper-text">
+          Choose how you want to enter the Mandir management system.
+        </p>
+
+        <div class="auth-tabs">
+          <button class="auth-tabs__item is-active" data-auth-target="adminLogin">
+            Admin Login
+          </button>
+          <button class="auth-tabs__item" data-auth-target="memberLogin">
+            Member Login
+          </button>
+        </div>
+
+        <div class="auth-panel is-active" id="adminLogin">
+          <form id="adminLoginForm" class="form-grid">
+            <label>
+              Username
+              <input id="adminUsername" type="text" required />
+            </label>
+            <label>
+              Password
+              <input id="adminPassword" type="password" required />
+            </label>
+            <div class="form-actions form-grid__full">
+              <button type="submit" class="primary-button">Login as Admin</button>
+            </div>
+            <p class="helper-text form-grid__full">
+              Default admin login: username `admin` and password `admin123`
+            </p>
+          </form>
+        </div>
+
+        <div class="auth-panel" id="memberLogin">
+          <form id="memberLoginForm" class="form-grid">
+            <label>
+              Member ID
+              <input id="memberLoginId" type="text" required />
+            </label>
+            <label>
+              Mobile Number
+              <input id="memberLoginPhone" type="tel" required />
+            </label>
+            <div class="form-actions form-grid__full">
+              <button type="submit" class="primary-button">Login as Member</button>
+            </div>
+            <p class="helper-text form-grid__full">
+              Members can login using their Member ID and registered mobile number.
+            </p>
+          </form>
+        </div>
+
+        <p class="auth-message" id="authMessage"></p>
+      </div>
+    </section>
+
+    <div class="page-shell is-hidden" id="appShell">
+      <div class="topbar">
+        <div>
+          <strong id="currentUserLabel">Logged in</strong>
+          <div class="helper-text" id="currentRoleLabel"></div>
+        </div>
+        <button class="ghost-button" id="logoutBtn">Logout</button>
+      </div>
+      <header class="hero">
+        <div class="hero__glow hero__glow--left"></div>
+        <div class="hero__glow hero__glow--right"></div>
+        <div class="hero__content">
+          <div class="hero__badge">Mandir Management System</div>
+          <div class="hero__layout">
+            <div>
+              <h1>MILAN MANDIR</h1>
+            </div>
+            <aside class="mandir-card">
+              <h2>Mandir Details</h2>
+              <p>
+                High School Coony, Ward No. 3, Jalukie, Dist: Peren,
+                Nagaland - 797110, INDIA
+              </p>
+              <a href="mailto:milanmandirjalukie@gmail.com">
+                milanmandirjalukie@gmail.com
+              </a>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <main class="app-grid">
+        <section class="panel panel--sidebar">
+          <nav class="nav-tabs" aria-label="Sections">
+            <button class="nav-tabs__item is-active" data-target="dashboard">
+              Dashboard
+            </button>
+            <button class="nav-tabs__item" data-target="members">
+              Members
+            </button>
+            <button class="nav-tabs__item" data-target="collections">
+              Monthly Collection
+            </button>
+            <button class="nav-tabs__item" data-target="donations">
+              Public Donations
+            </button>
+            <button class="nav-tabs__item" data-target="events">Events</button>
+            <button class="nav-tabs__item" data-target="announcements">
+              Announcements
+            </button>
+          </nav>
+
+          <div class="sidebar-card">
+            <h3>Quick Actions</h3>
+            <button class="secondary-button" id="downloadBackupBtn">
+              Download Backup
+            </button>
+            <button class="secondary-button" id="resetDataBtn">
+              Restore Sample Data
+            </button>
+            <p class="helper-text">
+              Data is saved in this browser only. Use backup regularly if you
+              want to keep a copy.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel panel--main">
+          <section class="tab-panel is-active" id="dashboard">
+            <div class="section-heading">
+              <div>
+                <p class="section-heading__eyebrow">Overview</p>
+                <h2>Mandir Operations Dashboard</h2>
+              </div>
+              <div class="section-heading__meta" id="todayDate"></div>
+            </div>
+
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="dashboard-layout">
+              <article class="content-card">
+                <div class="card-header">
+                  <h3 id="dashboardPrimaryCardTitle">Update Requests Received</h3>
+                  <span id="dashboardPrimaryCardMeta"></span>
+                </div>
+                <div
+                  id="dashboardPrimaryContent"
+                  class="record-list dashboard-scroll-list"
+                ></div>
+              </article>
+
+              <article class="content-card">
+                <div class="card-header">
+                  <h3 id="dashboardSideCardTitle">Pending Monthly Payments</h3>
+                  <div class="export-actions admin-export">
+                    <button
+                      type="button"
+                      class="ghost-button ghost-button--small"
+                      id="exportPendingCsvBtn"
+                    >
+                      CSV
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button ghost-button--small"
+                      id="exportPendingExcelBtn"
+                    >
+                      Excel
+                    </button>
+                  </div>
+                </div>
+                <ul id="recentActivity" class="activity-list"></ul>
+              </article>
+            </div>
+
+            <article class="content-card dashboard-full-card" id="dashboardMonthlySummaryCard">
+              <div class="card-header">
+                <h3 id="dashboardMonthlySummaryTitle">Last 6 Months Financial Summary</h3>
+                <span id="dashboardMonthlySummaryMeta"></span>
+              </div>
+              <div id="dashboardMonthlySummaryList" class="record-list"></div>
+            </article>
+          </section>
+
+          <section class="tab-panel" id="members">
+            <div class="section-heading">
+              <div>
+                <p class="section-heading__eyebrow">Registration</p>
+                <h2>Member Details</h2>
+              </div>
+            </div>
+
+            <div class="member-update-toggle is-hidden" id="memberUpdateToggleBar">
+              <button
+                type="button"
+                class="primary-button"
+                id="showMemberUpdateFormBtn"
+              >
+                Update Member Detail
+              </button>
+            </div>
+
+            <div class="two-column">
+              <article class="content-card" id="adminMemberRegistrationCard">
+                <div class="card-header">
+                  <h3>Member Registration</h3>
+                </div>
+                <p class="helper-text">
+                  Open the separate registration page to add a new member or edit
+                  member details.
+                </p>
+                <div class="form-actions">
+                  <a
+                    class="primary-button"
+                    id="openMemberRegistrationPageBtn"
+                    href="./member-registration.html"
+                  >
+                    Member Registration
+                  </a>
+                </div>
+              </article>
+
+              <article class="content-card" id="memberFormCard">
+                <div class="card-header">
+                  <h3 id="memberFormTitle">Register Member</h3>
+                </div>
+                <form id="memberForm" class="form-grid">
+                  <input type="hidden" id="memberId" />
+                  <label>
+                    Member ID
+                    <input id="memberCode" type="text" readonly />
+                  </label>
+                  <label>
+                    Full Name
+                    <input id="memberName" type="text" required />
+                  </label>
+                  <label>
+                    Gender
+                    <select id="memberGender" required>
+                      <option value="">Select</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                    </select>
+                  </label>
+                  <label>
+                    Phone Number
+                    <input id="memberPhone" type="tel" required />
+                  </label>
+                  <label>
+                    Email
+                    <input id="memberEmail" type="email" />
+                  </label>
+                  <label>
+                    Occupation
+                    <input id="memberOccupation" type="text" />
+                  </label>
+                  <label>
+                    Date of Birth (DOB)
+                    <input id="memberDob" type="date" required />
+                  </label>
+                  <label>
+                    Aadhaar Number
+                    <input
+                      id="memberAadhaarNumber"
+                      type="text"
+                      inputmode="numeric"
+                      placeholder="0000-0000-0000"
+                      pattern="[0-9]{4}-[0-9]{4}-[0-9]{4}"
+                      title="Enter Aadhaar number in 0000-0000-0000 format"
+                    />
+                  </label>
+                  <div class="form-grid__full family-section">
+                    <div class="card-header card-header--compact">
+                      <h3>Present Address</h3>
+                    </div>
+                    <div class="form-grid">
+                      <label>
+                        House No.
+                        <input id="memberPresentHouseNo" type="text" required />
+                      </label>
+                      <label>
+                        Location
+                        <input id="memberPresentLocation" type="text" required />
+                      </label>
+                      <label>
+                        Village/Town
+                        <input id="memberPresentVillageTown" type="text" required />
+                      </label>
+                      <label>
+                        District
+                        <input id="memberPresentDistrict" type="text" required />
+                      </label>
+                      <label>
+                        State
+                        <input id="memberPresentState" type="text" required />
+                      </label>
+                      <label>
+                        Pin Code
+                        <input id="memberPresentPinCode" type="text" inputmode="numeric" required />
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-grid__full family-section">
+                    <div class="card-header card-header--compact">
+                      <h3>Permanent Address</h3>
+                    </div>
+                    <div class="form-grid">
+                      <label>
+                        House No.
+                        <input id="memberPermanentHouseNo" type="text" required />
+                      </label>
+                      <label>
+                        Location
+                        <input id="memberPermanentLocation" type="text" required />
+                      </label>
+                      <label>
+                        Village/Town
+                        <input id="memberPermanentVillageTown" type="text" required />
+                      </label>
+                      <label>
+                        District
+                        <input id="memberPermanentDistrict" type="text" required />
+                      </label>
+                      <label>
+                        State
+                        <input id="memberPermanentState" type="text" required />
+                      </label>
+                      <label>
+                        Pin Code
+                        <input id="memberPermanentPinCode" type="text" inputmode="numeric" required />
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-grid__full family-section">
+                    <div class="card-header card-header--compact">
+                      <h3>Family Details</h3>
+                      <button
+                        type="button"
+                        class="ghost-button ghost-button--small"
+                        id="addFamilyMemberBtn"
+                      >
+                        Add Family Member
+                      </button>
+                    </div>
+                    <div id="familyMembersList" class="family-list"></div>
+                    <p class="helper-text">
+                      Add family member name and relation with the member.
+                    </p>
+                  </div>
+                  <label>
+                    Member Photo
+                    <input id="memberPhoto" type="file" accept="image/*" />
+                    <span id="memberPhotoStatus" class="upload-status"></span>
+                  </label>
+                  <label>
+                    Member Aadhaar Card
+                    <input
+                      id="memberAadhaarCard"
+                      type="file"
+                      accept="image/*,.pdf,application/pdf"
+                    />
+                    <span id="memberAadhaarStatus" class="upload-status"></span>
+                  </label>
+                  <div class="form-actions form-grid__full">
+                    <button type="submit" class="primary-button" id="memberSubmitBtn">
+                      Save Member
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button is-hidden"
+                      id="memberResetBtn"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button"
+                      id="memberClearBtn"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <p class="helper-text form-grid__full" id="memberFormNotice"></p>
+                </form>
+              </article>
+
+              <article class="content-card" id="memberListCard">
+                <div class="card-header">
+                  <h3 id="memberListTitle">Registered Members</h3>
+                  <div class="header-tools">
+                    <input
+                      id="memberSearch"
+                      class="search-input"
+                      type="search"
+                      placeholder="Search by name, phone, or occupation"
+                    />
+                    <div class="export-actions admin-export">
+                      <button
+                        type="button"
+                        class="ghost-button ghost-button--small"
+                        id="exportMembersCsvBtn"
+                      >
+                        CSV
+                      </button>
+                      <button
+                        type="button"
+                        class="ghost-button ghost-button--small"
+                        id="exportMembersExcelBtn"
+                      >
+                        Excel
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div id="memberList" class="record-list"></div>
+              </article>
+            </div>
+
+            <article class="content-card member-requests-card">
+              <div class="card-header">
+                <h3 id="memberRequestQueueTitle">Member Update Requests</h3>
+              </div>
+              <div id="memberUpdateRequestsList" class="record-list"></div>
+            </article>
+          </section>
+
+          <section class="tab-panel" id="collections">
+            <div class="section-heading">
+              <div>
+                <p class="section-heading__eyebrow">Finance</p>
+                <h2>Monthly Collection Records</h2>
+              </div>
+            </div>
+
+            <div class="two-column">
+              <article class="content-card">
+                <div class="card-header">
+                  <h3 id="collectionFormTitle">Add Monthly Collection</h3>
+                </div>
+                <form id="collectionForm" class="form-grid">
+                  <input type="hidden" id="collectionId" />
+                  <label>
+                    Member
+                    <select id="collectionMember" required></select>
+                  </label>
+                  <label>
+                    Month
+                    <input id="collectionMonth" type="month" required />
+                  </label>
+                  <label>
+                    Amount (INR)
+                    <input id="collectionAmount" type="number" min="0" required />
+                  </label>
+                  <label>
+                    Payment Date
+                    <input id="collectionDate" type="date" required />
+                  </label>
+                  <label>
+                    Status
+                    <select id="collectionStatus" required>
+                      <option>Paid</option>
+                      <option>Pending</option>
+                    </select>
+                  </label>
+                  <label class="form-grid__full">
+                    Remarks
+                    <textarea id="collectionRemarks" rows="3"></textarea>
+                  </label>
+                  <div class="form-actions form-grid__full">
+                    <button type="submit" class="primary-button">
+                      Save Collection
+                    </button>
+                    <button type="button" class="ghost-button" data-clear-form="collection">
+                      Clear
+                    </button>
+                  </div>
+                </form>
+              </article>
+
+              <article class="content-card">
+                <div class="card-header">
+                  <h3>Collection Ledger</h3>
+                  <div class="export-actions admin-export">
+                    <button
+                      type="button"
+                      class="ghost-button ghost-button--small"
+                      id="exportCollectionsCsvBtn"
+                    >
+                      CSV
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button ghost-button--small"
+                      id="exportCollectionsExcelBtn"
+                    >
+                      Excel
+                    </button>
+                  </div>
+                </div>
+                <div id="collectionList" class="record-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="donations">
+            <div class="section-heading">
+              <div>
+                <p class="section-heading__eyebrow">Finance</p>
+                <h2>Public Donations Record</h2>
+              </div>
+            </div>
+
+            <div class="two-column">
+              <article class="content-card">
+                <div class="card-header">
+                  <h3 id="donationFormTitle">Add Donation</h3>
+                </div>
+                <form id="donationForm" class="form-grid">
+                  <input type="hidden" id="donationId" />
+                  <label>
+                    Donor Name
+                    <input id="donorName" type="text" required />
+                  </label>
+                  <label>
+                    Contact Number
+                    <input id="donorPhone" type="tel" />
+                  </label>
+                  <label>
+                    Amount (INR)
+                    <input id="donationAmount" type="number" min="0" required />
+                  </label>
+                  <label>
+                    Donation Date
+                    <input id="donationDate" type="date" required />
+                  </label>
+                  <label class="form-grid__full">
+                    Purpose
+                    <input id="donationPurpose" type="text" />
+                  </label>
+                  <label class="form-grid__full">
+                    Notes
+                    <textarea id="donationNotes" rows="3"></textarea>
+                  </label>
+                  <div class="form-actions form-grid__full">
+                    <button type="submit" class="primary-button">
+                      Save Donation
+                    </button>
+                    <button type="button" class="ghost-button" data-clear-form="donation">
+                      Clear
+                    </button>
+                  </div>
+                </form>
+              </article>
+
+              <article class="content-card">
+                <div class="card-header">
+                  <h3>Donation Register</h3>
+                  <div class="export-actions admin-export">
+                    <button
+                      type="button"
+                      class="ghost-button ghost-button--small"
+                      id="exportDonationsCsvBtn"
+                    >
+                      CSV
+                    </button>
+                    <button
+                      type="button"
+                      class="ghost-button ghost-button--small"
+                      id="exportDonationsExcelBtn"
+                    >
+                      Excel
+                    </button>
+                  </div>
+                </div>
+                <div id="donationList" class="record-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="events">
+            <div class="section-heading">
+              <div>
+                <p class="section-heading__eyebrow">Planning</p>
+                <h2>Mandir Events</h2>
+              </div>
+            </div>
+
+            <div class="two-column">
+              <article class="content-card">
+                <div class="card-header">
+                  <h3 id="eventFormTitle">Create Event</h3>
+                </div>
+                <form id="eventForm" class="form-grid">
+                  <input type="hidden" id="eventId" />
+                  <label>
+                    Event Title
+                    <input id="eventTitle" type="text" required />
+                  </label>
+                  <label>
+                    Event Date
+                    <input id="eventDate" type="date" required />
+                  </label>
+                  <label>
+                    Venue
+                    <input id="eventVenue" type="text" required />
+                  </label>
+                  <label>
+                    Coordinator
+                    <input id="eventCoordinator" type="text" />
+                  </label>
+                  <label class="form-grid__full">
+                    Description
+                    <textarea id="eventDescription" rows="4"></textarea>
+                  </label>
+                  <div class="form-actions form-grid__full">
+                    <button type="submit" class="primary-button">
+                      Save Event
+                    </button>
+                    <button type="button" class="ghost-button" data-clear-form="event">
+                      Clear
+                    </button>
+                  </div>
+                </form>
+              </article>
+
+              <article class="content-card">
+                <div class="card-header">
+                  <h3>Upcoming and Past Events</h3>
+                </div>
+                <div id="eventList" class="record-list"></div>
+              </article>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="announcements">
+            <div class="section-heading">
+              <div>
+                <p class="section-heading__eyebrow">Communication</p>
+                <h2>Announcements</h2>
+              </div>
+            </div>
+
+            <div class="two-column">
+              <article class="content-card">
+                <div class="card-header">
+                  <h3 id="announcementFormTitle">Post Announcement</h3>
+                </div>
+                <form id="announcementForm" class="form-grid">
+                  <input type="hidden" id="announcementId" />
+                  <label>
+                    Title
+                    <input id="announcementTitle" type="text" required />
+                  </label>
+                  <label>
+                    Publish Date
+                    <input id="announcementDate" type="date" required />
+                  </label>
+                  <label>
+                    Category
+                    <select id="announcementCategory" required>
+                      <option>General</option>
+                      <option>Prayer</option>
+                      <option>Festival</option>
+                      <option>Meeting</option>
+                      <option>Finance</option>
+                    </select>
+                  </label>
+                  <label>
+                    Status
+                    <select id="announcementStatus" required>
+                      <option>Active</option>
+                      <option>Archived</option>
+                    </select>
+                  </label>
+                  <label class="form-grid__full">
+                    Message
+                    <textarea id="announcementMessage" rows="4" required></textarea>
+                  </label>
+                  <div class="form-actions form-grid__full">
+                    <button type="submit" class="primary-button">
+                      Save Announcement
+                    </button>
+                    <button type="button" class="ghost-button" data-clear-form="announcement">
+                      Clear
+                    </button>
+                  </div>
+                </form>
+              </article>
+
+              <article class="content-card">
+                <div class="card-header">
+                  <h3>Notice Board</h3>
+                </div>
+                <div id="announcementList" class="record-list"></div>
+              </article>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <template id="recordActionsTemplate">
+      <div class="record-actions">
+        <button class="ghost-button ghost-button--small action-edit">
+          Edit
+        </button>
+        <button class="ghost-button ghost-button--small action-delete">
+          Delete
+        </button>
+      </div>
+    </template>
+
+    <script src="./scroll-bridge.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

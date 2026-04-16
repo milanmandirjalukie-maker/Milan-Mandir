@@ -97,4 +97,4 @@ That makes Vercel serve:
 
 The offline app still uses browser `localStorage` and remains available at:
 
-- [index.html](C:/Users/dell/Downloads/milan-mandir-management-app/index.html)
+- [offline-index.html](C:/Users/dell/Downloads/milan-mandir-management-app/offline-index.html)
