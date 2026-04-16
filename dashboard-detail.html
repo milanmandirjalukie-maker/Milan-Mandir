@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MILAN MANDIR Dashboard Detail</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="topbar">
+        <div>
+          <strong>MILAN MANDIR</strong>
+          <div class="helper-text" id="detailDateLabel"></div>
+        </div>
+        <a class="ghost-button" href="./index.html">Back to Dashboard</a>
+      </div>
+
+      <header class="hero">
+        <div class="hero__glow hero__glow--left"></div>
+        <div class="hero__glow hero__glow--right"></div>
+        <div class="hero__content">
+          <div class="hero__badge">Financial Detail</div>
+          <div class="hero__layout">
+            <div>
+              <h1 id="detailPageHeading">Monthly Detail</h1>
+              <p class="hero__lead" id="detailPageLead">
+                View the selected collection or donation records and download them.
+              </p>
+            </div>
+            <aside class="mandir-card">
+              <h2>Mandir Details</h2>
+              <p>
+                High School Coony, Ward No. 3, Jalukie, Dist: Peren,
+                Nagaland - 797110, INDIA
+              </p>
+              <a href="mailto:milanmandirjalukie@gmail.com">
+                milanmandirjalukie@gmail.com
+              </a>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <main class="panel panel--main detail-page-panel">
+        <section class="section-heading">
+          <div>
+            <p class="section-heading__eyebrow">Monthly View</p>
+            <h2 id="detailCardTitle">Records</h2>
+          </div>
+          <div class="section-heading__meta" id="detailCountMeta"></div>
+        </section>
+
+        <article class="content-card dashboard-full-card">
+          <div class="card-header">
+            <h3 id="detailExportTitle">Export Records</h3>
+            <div class="export-actions">
+              <button
+                type="button"
+                class="ghost-button ghost-button--small"
+                id="detailCsvBtn"
+              >
+                CSV
+              </button>
+              <button
+                type="button"
+                class="ghost-button ghost-button--small"
+                id="detailExcelBtn"
+              >
+                Excel
+              </button>
+            </div>
+          </div>
+          <p class="helper-text" id="detailMetaText"></p>
+          <div id="detailRecordList" class="record-list"></div>
+        </article>
+      </main>
+    </div>
+
+    <script src="./scroll-bridge.js"></script>
+    <script src="./dashboard-detail.js"></script>
+  </body>
+</html>

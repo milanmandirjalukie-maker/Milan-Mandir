@@ -1,0 +1,12 @@
+{
+  "name": "milan-mandir-management-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MILAN MANDIR management app prepared for Node.js Hosting",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

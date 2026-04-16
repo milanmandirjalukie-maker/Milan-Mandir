@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MILAN MANDIR Member Registration</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="topbar">
+        <div>
+          <strong>MILAN MANDIR</strong>
+          <div class="helper-text" id="registrationDateLabel"></div>
+        </div>
+        <a class="ghost-button" href="./index.html">Back to Members</a>
+      </div>
+
+      <header class="hero">
+        <div class="hero__glow hero__glow--left"></div>
+        <div class="hero__glow hero__glow--right"></div>
+        <div class="hero__content">
+          <div class="hero__badge">Member Registration</div>
+          <div class="hero__layout">
+            <div>
+              <h1 id="registrationHeroTitle">Register Member</h1>
+              <p class="hero__lead" id="registrationHeroLead">
+                Add a new member or update an existing member record from this
+                separate registration page.
+              </p>
+            </div>
+            <aside class="mandir-card">
+              <h2>Mandir Details</h2>
+              <p>
+                High School Coony, Ward No. 3, Jalukie, Dist: Peren,
+                Nagaland - 797110, INDIA
+              </p>
+              <a href="mailto:milanmandirjalukie@gmail.com">
+                milanmandirjalukie@gmail.com
+              </a>
+            </aside>
+          </div>
+        </div>
+      </header>
+
+      <main class="panel panel--main detail-page-panel">
+        <article class="content-card">
+          <div class="card-header">
+            <h3 id="memberFormTitle">Register Member</h3>
+          </div>
+          <form id="memberRegistrationForm" class="form-grid">
+            <input type="hidden" id="memberId" />
+            <label>
+              Member ID
+              <input id="memberCode" type="text" readonly />
+            </label>
+            <label>
+              Full Name
+              <input id="memberName" type="text" required />
+            </label>
+            <label>
+              Gender
+              <select id="memberGender" required>
+                <option value="">Select</option>
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label>
+              Phone Number
+              <input id="memberPhone" type="tel" required />
+            </label>
+            <label>
+              Email
+              <input id="memberEmail" type="email" />
+            </label>
+            <label>
+              Occupation
+              <input id="memberOccupation" type="text" />
+            </label>
+            <label>
+              Date of Birth (DOB)
+              <input id="memberDob" type="date" required />
+            </label>
+            <label>
+              Aadhaar Number
+              <input
+                id="memberAadhaarNumber"
+                type="text"
+                inputmode="numeric"
+                placeholder="0000-0000-0000"
+                pattern="[0-9]{4}-[0-9]{4}-[0-9]{4}"
+                title="Enter Aadhaar number in 0000-0000-0000 format"
+              />
+            </label>
+
+            <div class="form-grid__full family-section">
+              <div class="card-header card-header--compact">
+                <h3>Present Address</h3>
+              </div>
+              <div class="form-grid">
+                <label>
+                  House No.
+                  <input id="memberPresentHouseNo" type="text" required />
+                </label>
+                <label>
+                  Location
+                  <input id="memberPresentLocation" type="text" required />
+                </label>
+                <label>
+                  Village/Town
+                  <input id="memberPresentVillageTown" type="text" required />
+                </label>
+                <label>
+                  District
+                  <input id="memberPresentDistrict" type="text" required />
+                </label>
+                <label>
+                  State
+                  <input id="memberPresentState" type="text" required />
+                </label>
+                <label>
+                  Pin Code
+                  <input id="memberPresentPinCode" type="text" inputmode="numeric" required />
+                </label>
+              </div>
+            </div>
+
+            <div class="form-grid__full family-section">
+              <div class="card-header card-header--compact">
+                <h3>Permanent Address</h3>
+              </div>
+              <div class="form-grid">
+                <label>
+                  House No.
+                  <input id="memberPermanentHouseNo" type="text" required />
+                </label>
+                <label>
+                  Location
+                  <input id="memberPermanentLocation" type="text" required />
+                </label>
+                <label>
+                  Village/Town
+                  <input id="memberPermanentVillageTown" type="text" required />
+                </label>
+                <label>
+                  District
+                  <input id="memberPermanentDistrict" type="text" required />
+                </label>
+                <label>
+                  State
+                  <input id="memberPermanentState" type="text" required />
+                </label>
+                <label>
+                  Pin Code
+                  <input id="memberPermanentPinCode" type="text" inputmode="numeric" required />
+                </label>
+              </div>
+            </div>
+
+            <div class="form-grid__full family-section">
+              <div class="card-header card-header--compact">
+                <h3>Family Details</h3>
+                <button
+                  type="button"
+                  class="ghost-button ghost-button--small"
+                  id="addFamilyMemberBtn"
+                >
+                  Add Family Member
+                </button>
+              </div>
+              <div id="familyMembersList" class="family-list"></div>
+              <p class="helper-text">
+                Add family member name and relation with the member.
+              </p>
+            </div>
+
+            <label>
+              Member Photo
+              <input id="memberPhoto" type="file" accept="image/*" />
+              <span id="memberPhotoStatus" class="upload-status"></span>
+            </label>
+            <label>
+              Member Aadhaar Card
+              <input
+                id="memberAadhaarCard"
+                type="file"
+                accept="image/*,.pdf,application/pdf"
+              />
+              <span id="memberAadhaarStatus" class="upload-status"></span>
+            </label>
+
+            <div class="form-actions form-grid__full">
+              <button type="submit" class="primary-button" id="memberSubmitBtn">
+                Save Member
+              </button>
+              <button type="button" class="ghost-button" id="memberResetBtn">
+                Reset
+              </button>
+            </div>
+            <p class="helper-text form-grid__full" id="memberFormNotice"></p>
+          </form>
+        </article>
+      </main>
+    </div>
+
+    <script src="./scroll-bridge.js"></script>
+    <script src="./member-registration.js"></script>
+  </body>
+</html>
