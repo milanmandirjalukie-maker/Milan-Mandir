@@ -97,7 +97,7 @@ async function loadMember(memberId) {
   currentMember = data;
   document.getElementById("registrationHeroTitle").textContent = "Edit Member";
   document.getElementById("registrationHeroLead").textContent =
-    "Update this live member record in the shared Supabase database.";
+    "Update this live member record in the shared Mandir system.";
   document.getElementById("memberFormTitle").textContent = `Edit Member: ${data.full_name}`;
   document.getElementById("memberSubmitBtn").textContent = "Update Member";
   document.getElementById("memberId").value = data.id;
@@ -129,7 +129,7 @@ function prepareNewForm() {
   document.getElementById("createMemberLogin").checked = true;
   document.getElementById("registrationHeroTitle").textContent = "Register Member";
   document.getElementById("registrationHeroLead").textContent =
-    "Create a new live member record in the shared Supabase database.";
+    "Create a new live member record in the shared Mandir system.";
   document.getElementById("memberFormTitle").textContent = "Register Member";
   document.getElementById("memberSubmitBtn").textContent = "Save Member";
   renderFamilyRows();

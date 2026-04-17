@@ -472,8 +472,8 @@ async function loadAdminAuditLogs() {
     return {
       data: [],
       error: {
-        message:
-          "Audit log table is not set up yet. Run the admin audit SQL once in Supabase SQL Editor.",
+          message:
+            "Audit log table is not set up yet. Run the admin audit setup SQL once.",
       },
     };
   }
