@@ -2134,7 +2134,7 @@ function downloadReceipt(collection) {
     <body>
       <div class="box">
         <h1>MILAN MANDIR</h1>
-        <p>High School Coony, Ward No. 3, Jalukie, Dist: Peren, Nagaland - 797110, INDIA</p>
+        <p>High School Colony, Ward No. 3, Jalukie, Dist: Peren, Nagaland - 797110, INDIA</p>
         <h2>Monthly Collection Receipt</h2>
         <p><strong>Member Name:</strong> ${escapeHtml(collection.member_name || member?.full_name || "")}</p>
         <p><strong>Member ID:</strong> ${escapeHtml(collection.member_code || member?.member_code || "")}</p>

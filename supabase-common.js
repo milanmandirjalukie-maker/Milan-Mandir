@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 export const FAMILY_RELATIONS = [
   "Father",
   "Mother",
+  "Spouse",
   "Son",
   "Daughter",
   "Daughter-in-law",
