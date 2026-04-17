@@ -194,6 +194,7 @@ textarea {
   justify-content: center;
   text-align: center;
   min-height: 210px;
+  padding-left: 110px;
 }
 
 .hero h1,
@@ -210,13 +211,13 @@ textarea {
 
 .hero__centerpiece {
   position: absolute;
-  top: 146px;
-  left: 42px;
+  top: 128px;
+  left: 26px;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 126px;
-  height: 126px;
+  width: 92px;
+  height: 92px;
   pointer-events: none;
 }
 
@@ -837,15 +838,16 @@ textarea {
   }
 
   .hero__centerpiece {
-    top: 140px;
-    left: 28px;
-    width: 100px;
-    height: 100px;
+    top: 134px;
+    left: 22px;
+    width: 76px;
+    height: 76px;
   }
 
   .hero__identity {
     min-height: unset;
     padding-top: 86px;
+    padding-left: 0;
   }
 }
 
