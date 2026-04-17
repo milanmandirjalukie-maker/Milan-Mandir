@@ -2119,6 +2119,7 @@ async function openStorageDocument(path, label) {
 function downloadReceipt(collection) {
   const member =
     state.members.find((item) => item.id === collection.member_id) || state.memberRecord;
+  const logoUrl = new URL("./assets/mandir-logo.jpg", window.location.href).href;
   const html = `<!DOCTYPE html>
   <html>
     <head>
@@ -2127,14 +2128,19 @@ function downloadReceipt(collection) {
       <style>
         body { font-family: Georgia, serif; color: #3c190f; padding: 32px; }
         .box { border: 1px solid #c7a47e; border-radius: 16px; padding: 24px; }
+        .box-header { text-align: center; border-bottom: 2px solid #c85e12; padding-bottom: 18px; margin-bottom: 22px; }
+        .receipt-logo { width: 110px; height: auto; display: block; margin: 0 auto 14px; }
         h1, h2 { margin: 0 0 12px; }
         p { margin: 8px 0; }
       </style>
     </head>
     <body>
       <div class="box">
+        <div class="box-header">
+        <img class="receipt-logo" src="${logoUrl}" alt="Milan Mandir Logo" />
         <h1>MILAN MANDIR</h1>
         <p>High School Colony, Ward No. 3, Jalukie, Dist: Peren, Nagaland - 797110, INDIA</p>
+        </div>
         <h2>Monthly Collection Receipt</h2>
         <p><strong>Member Name:</strong> ${escapeHtml(collection.member_name || member?.full_name || "")}</p>
         <p><strong>Member ID:</strong> ${escapeHtml(collection.member_code || member?.member_code || "")}</p>

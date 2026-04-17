@@ -1734,6 +1734,7 @@ function buildMemberReceiptHtml(collection, member) {
   const paymentDate = collection.paymentDate ? formatDate(collection.paymentDate) : "Not available";
   const amount = formatCurrency(collection.amount);
   const monthLabel = formatMonth(collection.month);
+  const logoUrl = new URL("./assets/mandir-logo.jpg", window.location.href).href;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -1764,6 +1765,7 @@ function buildMemberReceiptHtml(collection, member) {
         border-bottom: 2px solid #c85e12;
         padding-bottom: 20px;
         margin-bottom: 24px;
+        text-align: center;
       }
 
       .receipt__badge {
@@ -1776,6 +1778,14 @@ function buildMemberReceiptHtml(collection, member) {
         font-weight: 700;
         letter-spacing: 0.08em;
         text-transform: uppercase;
+      }
+
+      .receipt__logo {
+        width: 116px;
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto 16px;
       }
 
       h1 {
@@ -1867,8 +1877,9 @@ function buildMemberReceiptHtml(collection, member) {
     <article class="receipt">
       <header class="receipt__header">
         <span class="receipt__badge">Monthly Collection Receipt</span>
+        <img class="receipt__logo" src="${logoUrl}" alt="Milan Mandir Logo" />
         <h1>MILAN MANDIR</h1>
-        <p>High School Coony, Ward No. 3, Jalukie, Dist: Peren, Nagaland - 797110, INDIA</p>
+        <p>High School Colony, Ward No. 3, Jalukie, Dist: Peren, Nagaland - 797110, INDIA</p>
         <p>Email: milanmandirjalukie@gmail.com</p>
       </header>
 
