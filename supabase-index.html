@@ -37,14 +37,6 @@
     </section>
 
     <div class="page-shell is-hidden" id="appShell">
-      <div class="topbar">
-        <div>
-          <strong id="currentUserLabel">Logged in</strong>
-          <div class="helper-text" id="currentRoleLabel"></div>
-        </div>
-        <button class="ghost-button" id="logoutBtn">Logout</button>
-      </div>
-
       <header class="hero">
         <div class="hero__garland-banner" aria-hidden="true"></div>
         <div class="hero__glow hero__glow--left"></div>
@@ -81,6 +73,14 @@
 
       <main class="app-grid">
         <section class="panel panel--sidebar">
+          <div class="sidebar-card sidebar-card--account">
+            <div>
+              <strong id="currentUserLabel">Logged in</strong>
+              <div class="helper-text" id="currentRoleLabel"></div>
+            </div>
+            <button class="ghost-button" id="logoutBtn">Logout</button>
+          </div>
+
           <nav class="nav-tabs" aria-label="Mandir Sections">
             <button class="nav-tabs__item is-active" data-target="dashboard">
               Dashboard

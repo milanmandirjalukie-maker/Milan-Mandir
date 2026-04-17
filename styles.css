@@ -114,19 +114,6 @@ textarea {
   margin: 24px auto 48px;
 }
 
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 18px;
-  padding: 16px 20px;
-  border: 1px solid var(--line);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.7);
-  box-shadow: var(--shadow);
-}
-
 .hero {
   position: relative;
   overflow: hidden;
@@ -280,6 +267,20 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.sidebar-card--account {
+  gap: 14px;
+}
+
+.sidebar-card--account #currentUserLabel {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.sidebar-card--account #logoutBtn {
+  width: 100%;
 }
 
 .nav-tabs,
@@ -827,19 +828,9 @@ textarea {
 }
 
 @media (max-width: 720px) {
-  .auth-tabs,
-  .topbar {
+  .auth-tabs {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .topbar > div {
-    order: 1;
-  }
-
-  .topbar #logoutBtn {
-    order: 2;
-    width: 100%;
   }
 
   .page-shell {
