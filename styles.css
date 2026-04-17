@@ -138,10 +138,87 @@ textarea {
   box-shadow: var(--shadow);
 }
 
+.hero__garlands {
+  position: absolute;
+  inset: 0 24px auto;
+  height: 108px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero__garland {
+  position: absolute;
+  top: 0;
+  height: 92px;
+  border: 4px solid rgba(138, 45, 24, 0.24);
+  border-top: 0;
+  border-radius: 0 0 999px 999px;
+}
+
+.hero__garland::before,
+.hero__garland::after {
+  content: "";
+  position: absolute;
+  bottom: -11px;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  box-shadow:
+    0 0 0 4px rgba(255, 244, 229, 0.9),
+    0 0 0 8px rgba(198, 73, 31, 0.14);
+}
+
+.hero__garland::before {
+  left: 10%;
+  background:
+    radial-gradient(circle at 35% 35%, #ffe7b9 0 22%, transparent 23%),
+    radial-gradient(circle at 70% 40%, #f09c36 0 34%, transparent 35%),
+    radial-gradient(circle at 45% 70%, #b8331d 0 42%, #8f2316 43% 100%);
+}
+
+.hero__garland::after {
+  right: 10%;
+  background:
+    radial-gradient(circle at 35% 35%, #ffe7b9 0 22%, transparent 23%),
+    radial-gradient(circle at 70% 40%, #ffd25d 0 34%, transparent 35%),
+    radial-gradient(circle at 45% 70%, #ce5e1a 0 42%, #9c2e1a 43% 100%);
+}
+
+.hero__garland--left {
+  left: 0;
+  width: 36%;
+}
+
+.hero__garland--center {
+  left: 32%;
+  width: 36%;
+  height: 102px;
+}
+
+.hero__garland--right {
+  right: 0;
+  width: 36%;
+}
+
+.hero__garland--center::before,
+.hero__garland--center::after {
+  width: 24px;
+  height: 24px;
+}
+
+.hero__garland--center::before {
+  left: 4%;
+}
+
+.hero__garland--center::after {
+  right: 4%;
+}
+
 .hero__content {
   position: relative;
   z-index: 2;
   padding: 40px;
+  padding-top: 72px;
 }
 
 .hero__glow {
@@ -814,6 +891,10 @@ textarea {
   .content-card,
   .stats-grid article {
     padding: 18px;
+  }
+
+  .hero__content {
+    padding-top: 72px;
   }
 
   .nav-tabs,
