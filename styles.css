@@ -194,7 +194,7 @@ textarea {
   justify-content: center;
   text-align: center;
   min-height: 210px;
-  padding-left: 118px;
+  padding-left: 0;
 }
 
 .hero h1,
@@ -210,15 +210,24 @@ textarea {
 }
 
 .hero__centerpiece {
-  position: absolute;
-  top: 232px;
-  left: 62px;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 146px;
   height: 146px;
   pointer-events: none;
+}
+
+.hero--portal .hero__layout {
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.95fr);
+  gap: 32px;
+  align-items: center;
+}
+
+.hero--portal .hero__identity {
+  align-items: center;
+  text-align: center;
+  padding-left: 0;
 }
 
 .hero__logo {
@@ -837,11 +846,20 @@ textarea {
     flex-wrap: wrap;
   }
 
-  .hero__centerpiece {
-    top: 184px;
-    left: 24px;
+  .hero--portal .hero__centerpiece {
     width: 118px;
     height: 118px;
+  }
+
+  .hero--portal .hero__layout {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .hero--portal .hero__identity {
+    align-items: center;
+    text-align: center;
+    padding-left: 0;
   }
 
   .hero__identity {
