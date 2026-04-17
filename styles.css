@@ -180,8 +180,8 @@ textarea {
 
 .hero__layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(150px, 220px) minmax(260px, 0.8fr);
-  gap: 24px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(120px, 170px) minmax(260px, 0.85fr);
+  gap: 12px;
   align-items: center;
   margin-top: 18px;
 }
@@ -205,13 +205,13 @@ textarea {
 
 .hero__centerpiece {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  padding: 12px 0;
+  padding: 12px 0 12px 8px;
 }
 
 .hero__logo {
-  width: clamp(120px, 13vw, 170px);
+  width: clamp(110px, 11vw, 150px);
   max-width: 100%;
   height: auto;
   object-fit: contain;
