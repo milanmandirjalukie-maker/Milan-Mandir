@@ -1019,7 +1019,10 @@ function renderCollectionCard(collection, adminActions) {
     actions.push(
       `<button type="button" class="ghost-button ghost-button--small collection-edit-btn" data-id="${escapeAttribute(
         collection.id
-      )}">Edit</button>`
+      )}">Edit</button>`,
+      `<button type="button" class="ghost-button ghost-button--small collection-delete-btn" data-id="${escapeAttribute(
+        collection.id
+      )}">Delete</button>`
     );
   }
 
@@ -1062,6 +1065,9 @@ function renderDonationCard(donation) {
           <button type="button" class="ghost-button ghost-button--small donation-edit-btn" data-id="${escapeAttribute(
             donation.id
           )}">Edit</button>
+          <button type="button" class="ghost-button ghost-button--small donation-delete-btn" data-id="${escapeAttribute(
+            donation.id
+          )}">Delete</button>
         </div>
       </div>
       <div class="record-meta">${escapeHtml(donation.donor_phone || "No contact number")}</div>
@@ -1086,6 +1092,9 @@ function renderEventCard(event, adminActions) {
                 <button type="button" class="ghost-button ghost-button--small event-edit-btn" data-id="${escapeAttribute(
                   event.id
                 )}">Edit</button>
+                <button type="button" class="ghost-button ghost-button--small event-delete-btn" data-id="${escapeAttribute(
+                  event.id
+                )}">Delete</button>
               </div>`
             : ""
         }
@@ -1111,6 +1120,9 @@ function renderAnnouncementCard(item, adminActions) {
                 <button type="button" class="ghost-button ghost-button--small announcement-edit-btn" data-id="${escapeAttribute(
                   item.id
                 )}">Edit</button>
+                <button type="button" class="ghost-button ghost-button--small announcement-delete-btn" data-id="${escapeAttribute(
+                  item.id
+                )}">Delete</button>
               </div>`
             : ""
         }
@@ -1324,6 +1336,176 @@ async function handleMemberDelete(memberId, memberName) {
   await loadData();
   renderAll();
   setAuthMessage(`${memberName} was deleted successfully.`);
+}
+
+async function handleCollectionDelete(collectionId) {
+  if (!isAdmin()) {
+    return;
+  }
+
+  const collection = state.collections.find((item) => item.id === collectionId);
+  if (!collection) {
+    setAuthMessage("Could not find that collection record.");
+    return;
+  }
+
+  const confirmed = window.confirm(
+    `Delete collection for "${collection.member_name || collection.member_code}" (${collection.month_key})?`
+  );
+  if (!confirmed) {
+    return;
+  }
+
+  setAuthMessage(`Deleting collection for ${collection.member_name || collection.member_code}...`);
+
+  const { error } = await supabase.from("collections").delete().eq("id", collection.id);
+  if (error) {
+    setAuthMessage(`Could not delete collection: ${error.message}`);
+    return;
+  }
+
+  await writeAdminAuditLog({
+    actionType: "collection_deleted",
+    entityType: "collection",
+    entityId: collection.id,
+    summary: `Deleted collection for ${collection.member_name || collection.member_code}`,
+    details: {
+      member_code: collection.member_code,
+      month_key: collection.month_key,
+      amount: collection.amount,
+      status: collection.status,
+    },
+  });
+
+  await loadData();
+  renderAll();
+  setAuthMessage(`Collection deleted for ${collection.member_name || collection.member_code}.`);
+}
+
+async function handleDonationDelete(donationId) {
+  if (!isAdmin()) {
+    return;
+  }
+
+  const donation = state.donations.find((item) => item.id === donationId);
+  if (!donation) {
+    setAuthMessage("Could not find that donation record.");
+    return;
+  }
+
+  const confirmed = window.confirm(`Delete donation from "${donation.donor_name}"?`);
+  if (!confirmed) {
+    return;
+  }
+
+  setAuthMessage(`Deleting donation from ${donation.donor_name}...`);
+
+  const { error } = await supabase.from("donations").delete().eq("id", donation.id);
+  if (error) {
+    setAuthMessage(`Could not delete donation: ${error.message}`);
+    return;
+  }
+
+  await writeAdminAuditLog({
+    actionType: "donation_deleted",
+    entityType: "donation",
+    entityId: donation.id,
+    summary: `Deleted donation from ${donation.donor_name}`,
+    details: {
+      donor_name: donation.donor_name,
+      donor_phone: donation.donor_phone,
+      amount: donation.amount,
+      donation_date: donation.donation_date,
+    },
+  });
+
+  await loadData();
+  renderAll();
+  setAuthMessage(`Donation deleted for ${donation.donor_name}.`);
+}
+
+async function handleEventDelete(eventId) {
+  if (!isAdmin()) {
+    return;
+  }
+
+  const event = state.events.find((item) => item.id === eventId);
+  if (!event) {
+    setAuthMessage("Could not find that event record.");
+    return;
+  }
+
+  const confirmed = window.confirm(`Delete event "${event.title}"?`);
+  if (!confirmed) {
+    return;
+  }
+
+  setAuthMessage(`Deleting event ${event.title}...`);
+
+  const { error } = await supabase.from("events").delete().eq("id", event.id);
+  if (error) {
+    setAuthMessage(`Could not delete event: ${error.message}`);
+    return;
+  }
+
+  await writeAdminAuditLog({
+    actionType: "event_deleted",
+    entityType: "event",
+    entityId: event.id,
+    summary: `Deleted event ${event.title}`,
+    details: {
+      title: event.title,
+      event_date: event.event_date,
+      venue: event.venue,
+      coordinator: event.coordinator,
+    },
+  });
+
+  await loadData();
+  renderAll();
+  setAuthMessage(`Event deleted: ${event.title}.`);
+}
+
+async function handleAnnouncementDelete(announcementId) {
+  if (!isAdmin()) {
+    return;
+  }
+
+  const announcement = state.announcements.find((item) => item.id === announcementId);
+  if (!announcement) {
+    setAuthMessage("Could not find that announcement record.");
+    return;
+  }
+
+  const confirmed = window.confirm(`Delete announcement "${announcement.title}"?`);
+  if (!confirmed) {
+    return;
+  }
+
+  setAuthMessage(`Deleting announcement ${announcement.title}...`);
+
+  const { error } = await supabase.from("announcements").delete().eq("id", announcement.id);
+  if (error) {
+    setAuthMessage(`Could not delete announcement: ${error.message}`);
+    return;
+  }
+
+  await writeAdminAuditLog({
+    actionType: "announcement_deleted",
+    entityType: "announcement",
+    entityId: announcement.id,
+    summary: `Deleted announcement ${announcement.title}`,
+    details: {
+      title: announcement.title,
+      category: announcement.category,
+      status: announcement.status,
+      announcement_date: announcement.announcement_date,
+    },
+  });
+
+  await loadData();
+  renderAll();
+  setAuthMessage(`Announcement deleted: ${announcement.title}.`);
 }
 
 async function handleFullBackupDownload() {
@@ -1544,6 +1726,15 @@ function bindCollectionButtons(container) {
       }
     });
   });
+
+  container.querySelectorAll(".collection-delete-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const record = state.collections.find((item) => item.id === button.dataset.id);
+      if (record) {
+        await handleCollectionDelete(record.id);
+      }
+    });
+  });
 }
 
 function bindDonationButtons(container) {
@@ -1553,6 +1744,15 @@ function bindDonationButtons(container) {
       if (donation) {
         populateDonationForm(donation);
         activateTab("donations");
+      }
+    });
+  });
+
+  container.querySelectorAll(".donation-delete-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const donation = state.donations.find((item) => item.id === button.dataset.id);
+      if (donation) {
+        await handleDonationDelete(donation.id);
       }
     });
   });
@@ -1568,6 +1768,15 @@ function bindEventButtons(container) {
       }
     });
   });
+
+  container.querySelectorAll(".event-delete-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const event = state.events.find((item) => item.id === button.dataset.id);
+      if (event) {
+        await handleEventDelete(event.id);
+      }
+    });
+  });
 }
 
 function bindAnnouncementButtons(container) {
@@ -1577,6 +1786,15 @@ function bindAnnouncementButtons(container) {
       if (announcement) {
         populateAnnouncementForm(announcement);
         activateTab("announcements");
+      }
+    });
+  });
+
+  container.querySelectorAll(".announcement-delete-btn").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const announcement = state.announcements.find((item) => item.id === button.dataset.id);
+      if (announcement) {
+        await handleAnnouncementDelete(announcement.id);
       }
     });
   });
@@ -1602,11 +1820,13 @@ async function handleCollectionSave(event) {
     return;
   }
 
+  setCollectionFormNotice("");
+
   const collectionId = document.getElementById("collectionId").value;
   const memberId = document.getElementById("collectionMember").value;
   const member = state.members.find((item) => item.id === memberId);
   if (!member) {
-    setAuthMessage("Select a valid member before saving the collection.");
+    setCollectionFormNotice("Select a valid member before saving the collection.");
     return;
   }
 
@@ -1644,7 +1864,7 @@ async function handleCollectionSave(event) {
       .single();
 
     if (result.error) {
-      setAuthMessage(result.error.message);
+      setCollectionFormNotice(result.error.message);
       return;
     }
 
@@ -1662,6 +1882,7 @@ async function handleCollectionSave(event) {
     });
 
     resetCollectionForm();
+    setCollectionFormNotice(`Collection updated for ${member.full_name}.`);
     await loadData();
     renderAll();
     return;
@@ -1672,12 +1893,11 @@ async function handleCollectionSave(event) {
       ? [document.getElementById("collectionMonth").value]
       : getCollectionMonthRange(
           document.getElementById("collectionFromMonth").value,
-          document.getElementById("collectionToMonth").value,
-          collectionMonthCount
+          document.getElementById("collectionToMonth").value
         );
 
   if (!monthKeys.length) {
-    setAuthMessage("Select a valid month or month range before saving the collection.");
+    setCollectionFormNotice("Select a valid month or month range before saving the collection.");
     return;
   }
 
@@ -1690,7 +1910,7 @@ async function handleCollectionSave(event) {
   const result = await supabase.from("collections").insert(rows).select();
 
   if (result.error) {
-    setAuthMessage(result.error.message);
+    setCollectionFormNotice(result.error.message);
     return;
   }
 
@@ -1713,6 +1933,11 @@ async function handleCollectionSave(event) {
   });
 
   resetCollectionForm();
+  setCollectionFormNotice(
+    rows.length === 1
+      ? `Collection saved for ${member.full_name}.`
+      : `${rows.length} monthly collections saved for ${member.full_name}.`
+  );
   await loadData();
   renderAll();
 }
@@ -1987,6 +2212,7 @@ function resetCollectionForm() {
   document.getElementById("collectionDate").value = getTodayIso();
   document.getElementById("collectionFormTitle").textContent = "Add Collection";
   syncCollectionMonthInputs();
+  setCollectionFormNotice("");
 }
 
 function syncCollectionMonthInputs() {
@@ -2020,7 +2246,7 @@ function syncCollectionMonthInputs() {
   }
 }
 
-function getCollectionMonthRange(fromMonth, toMonth, expectedCount) {
+function getCollectionMonthRange(fromMonth, toMonth) {
   if (!fromMonth || !toMonth) {
     return [];
   }
@@ -2028,7 +2254,9 @@ function getCollectionMonthRange(fromMonth, toMonth, expectedCount) {
   const start = parseMonthKey(fromMonth);
   const end = parseMonthKey(toMonth);
   if (!start || !end || start > end) {
-    setAuthMessage("Choose a valid month range. 'To Month' must be after or equal to 'From Month'.");
+    setCollectionFormNotice(
+      "Choose a valid month range. 'To Month' must be after or equal to 'From Month'."
+    );
     return [];
   }
 
@@ -2041,13 +2269,6 @@ function getCollectionMonthRange(fromMonth, toMonth, expectedCount) {
       `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`
     );
     cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
-  }
-
-  if (monthKeys.length !== expectedCount) {
-    setAuthMessage(
-      `The selected month range covers ${monthKeys.length} month(s). Please set 'Number of Months' to match the range.`
-    );
-    return [];
   }
 
   return monthKeys;
@@ -2600,6 +2821,14 @@ function toggleElementDisplay(element, shouldShow) {
 
 function setAuthMessage(message) {
   document.getElementById("authMessage").textContent = message || "";
+}
+
+function setCollectionFormNotice(message) {
+  const element = document.getElementById("collectionFormNotice");
+  if (!element) {
+    return;
+  }
+  element.textContent = message || "";
 }
 
 function setAdminBackupMessage(message) {
