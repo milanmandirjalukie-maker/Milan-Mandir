@@ -112,6 +112,9 @@ function bindTabs() {
 function bindForms() {
   document.getElementById("collectionForm").addEventListener("submit", handleCollectionSave);
   document.getElementById("collectionResetBtn").addEventListener("click", resetCollectionForm);
+  document
+    .getElementById("collectionMonthCount")
+    .addEventListener("change", syncCollectionMonthInputs);
 
   document.getElementById("donationForm").addEventListener("submit", handleDonationSave);
   document.getElementById("donationResetBtn").addEventListener("click", resetDonationForm);
@@ -1607,21 +1610,84 @@ async function handleCollectionSave(event) {
     return;
   }
 
+  const collectionMonthCount = Number(
+    document.getElementById("collectionMonthCount").value || 1
+  );
+  const amount = Number(
+    document.getElementById("collectionAmount").value || monthlyCollectionDefault
+  );
+  const paymentDate = document.getElementById("collectionDate").value || null;
+  const status = document.getElementById("collectionStatus").value;
+  const remarks = document.getElementById("collectionRemarks").value.trim();
+
   const payload = {
     member_id: member.id,
     member_code: member.member_code,
     member_name: member.full_name,
-    month_key: document.getElementById("collectionMonth").value,
-    month_date: getMonthStartIso(document.getElementById("collectionMonth").value),
-    amount: Number(document.getElementById("collectionAmount").value || monthlyCollectionDefault),
-    payment_date: document.getElementById("collectionDate").value || null,
-    status: document.getElementById("collectionStatus").value,
-    remarks: document.getElementById("collectionRemarks").value.trim(),
+    amount,
+    payment_date: paymentDate,
+    status,
+    remarks,
   };
 
-  const result = collectionId
-    ? await supabase.from("collections").update(payload).eq("id", collectionId).select().single()
-    : await supabase.from("collections").insert(payload).select().single();
+  if (collectionId) {
+    const singleMonthKey = document.getElementById("collectionMonth").value;
+    const result = await supabase
+      .from("collections")
+      .update({
+        ...payload,
+        month_key: singleMonthKey,
+        month_date: getMonthStartIso(singleMonthKey),
+      })
+      .eq("id", collectionId)
+      .select()
+      .single();
+
+    if (result.error) {
+      setAuthMessage(result.error.message);
+      return;
+    }
+
+    await writeAdminAuditLog({
+      actionType: "collection_updated",
+      entityType: "collection",
+      entityId: result.data?.id,
+      summary: `Updated collection for ${member.full_name}`,
+      details: {
+        member_code: member.member_code,
+        month_key: singleMonthKey,
+        amount: payload.amount,
+        status: payload.status,
+      },
+    });
+
+    resetCollectionForm();
+    await loadData();
+    renderAll();
+    return;
+  }
+
+  const monthKeys =
+    collectionMonthCount === 1
+      ? [document.getElementById("collectionMonth").value]
+      : getCollectionMonthRange(
+          document.getElementById("collectionFromMonth").value,
+          document.getElementById("collectionToMonth").value,
+          collectionMonthCount
+        );
+
+  if (!monthKeys.length) {
+    setAuthMessage("Select a valid month or month range before saving the collection.");
+    return;
+  }
+
+  const rows = monthKeys.map((monthKey) => ({
+    ...payload,
+    month_key: monthKey,
+    month_date: getMonthStartIso(monthKey),
+  }));
+
+  const result = await supabase.from("collections").insert(rows).select();
 
   if (result.error) {
     setAuthMessage(result.error.message);
@@ -1629,13 +1695,18 @@ async function handleCollectionSave(event) {
   }
 
   await writeAdminAuditLog({
-    actionType: collectionId ? "collection_updated" : "collection_created",
+    actionType: "collection_created",
     entityType: "collection",
-    entityId: result.data?.id,
-    summary: `${collectionId ? "Updated" : "Created"} collection for ${member.full_name}`,
+    entityId: result.data?.[0]?.id,
+    summary:
+      rows.length === 1
+        ? `Created collection for ${member.full_name}`
+        : `Created ${rows.length} monthly collections for ${member.full_name}`,
     details: {
       member_code: member.member_code,
-      month_key: payload.month_key,
+      month_key: rows.length === 1 ? rows[0].month_key : undefined,
+      month_range: rows.length > 1 ? `${rows[0].month_key} to ${rows[rows.length - 1].month_key}` : undefined,
+      month_count: rows.length,
       amount: payload.amount,
       status: payload.status,
     },
@@ -1891,21 +1962,103 @@ async function handleRequestReview(requestId, status) {
 function populateCollectionForm(collection) {
   document.getElementById("collectionId").value = collection.id;
   document.getElementById("collectionMember").value = collection.member_id;
+  document.getElementById("collectionMonthCount").value = "1";
+  document.getElementById("collectionMonthCount").disabled = true;
   document.getElementById("collectionMonth").value = collection.month_key;
+  document.getElementById("collectionFromMonth").value = collection.month_key;
+  document.getElementById("collectionToMonth").value = collection.month_key;
   document.getElementById("collectionAmount").value = collection.amount;
   document.getElementById("collectionDate").value = collection.payment_date || "";
   document.getElementById("collectionStatus").value = collection.status;
   document.getElementById("collectionRemarks").value = collection.remarks || "";
   document.getElementById("collectionFormTitle").textContent = "Edit Collection";
+  syncCollectionMonthInputs();
 }
 
 function resetCollectionForm() {
   document.getElementById("collectionForm").reset();
   document.getElementById("collectionId").value = "";
+  document.getElementById("collectionMonthCount").disabled = false;
+  document.getElementById("collectionMonthCount").value = "1";
   document.getElementById("collectionAmount").value = monthlyCollectionDefault;
   document.getElementById("collectionMonth").value = getCurrentMonthKey();
+  document.getElementById("collectionFromMonth").value = getCurrentMonthKey();
+  document.getElementById("collectionToMonth").value = getCurrentMonthKey();
   document.getElementById("collectionDate").value = getTodayIso();
   document.getElementById("collectionFormTitle").textContent = "Add Collection";
+  syncCollectionMonthInputs();
+}
+
+function syncCollectionMonthInputs() {
+  const count = Number(document.getElementById("collectionMonthCount").value || 1);
+  const showRange = count > 1 && !document.getElementById("collectionMonthCount").disabled;
+  const singleMonthField = document.getElementById("collectionSingleMonthField");
+  const fromMonthField = document.getElementById("collectionFromMonthField");
+  const toMonthField = document.getElementById("collectionToMonthField");
+  const singleMonthInput = document.getElementById("collectionMonth");
+  const fromMonthInput = document.getElementById("collectionFromMonth");
+  const toMonthInput = document.getElementById("collectionToMonth");
+
+  toggleElementDisplay(singleMonthField, !showRange);
+  toggleElementDisplay(fromMonthField, showRange);
+  toggleElementDisplay(toMonthField, showRange);
+
+  singleMonthInput.required = !showRange;
+  fromMonthInput.required = showRange;
+  toMonthInput.required = showRange;
+
+  if (showRange) {
+    if (!fromMonthInput.value) {
+      fromMonthInput.value = singleMonthInput.value || getCurrentMonthKey();
+    }
+    if (!toMonthInput.value) {
+      toMonthInput.value = fromMonthInput.value;
+    }
+  } else if (singleMonthInput.value) {
+    fromMonthInput.value = singleMonthInput.value;
+    toMonthInput.value = singleMonthInput.value;
+  }
+}
+
+function getCollectionMonthRange(fromMonth, toMonth, expectedCount) {
+  if (!fromMonth || !toMonth) {
+    return [];
+  }
+
+  const start = parseMonthKey(fromMonth);
+  const end = parseMonthKey(toMonth);
+  if (!start || !end || start > end) {
+    setAuthMessage("Choose a valid month range. 'To Month' must be after or equal to 'From Month'.");
+    return [];
+  }
+
+  const monthKeys = [];
+  let cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+  const endDate = new Date(end.getFullYear(), end.getMonth(), 1);
+
+  while (cursor <= endDate) {
+    monthKeys.push(
+      `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`
+    );
+    cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1);
+  }
+
+  if (monthKeys.length !== expectedCount) {
+    setAuthMessage(
+      `The selected month range covers ${monthKeys.length} month(s). Please set 'Number of Months' to match the range.`
+    );
+    return [];
+  }
+
+  return monthKeys;
+}
+
+function parseMonthKey(monthKey) {
+  const [year, month] = `${monthKey}`.split("-").map(Number);
+  if (!year || !month) {
+    return null;
+  }
+  return new Date(year, month - 1, 1);
 }
 
 function populateDonationForm(donation) {
