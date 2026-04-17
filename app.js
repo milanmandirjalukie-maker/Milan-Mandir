@@ -1734,7 +1734,7 @@ function buildMemberReceiptHtml(collection, member) {
   const paymentDate = collection.paymentDate ? formatDate(collection.paymentDate) : "Not available";
   const amount = formatCurrency(collection.amount);
   const monthLabel = formatMonth(collection.month);
-  const logoUrl = new URL("./assets/mandir-logo.jpg", window.location.href).href;
+  const logoUrl = new URL("./assets/mandir-logo-transparent.png", window.location.href).href;
 
   return `<!DOCTYPE html>
 <html lang="en">

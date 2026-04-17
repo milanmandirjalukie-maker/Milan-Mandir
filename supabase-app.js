@@ -2119,7 +2119,7 @@ async function openStorageDocument(path, label) {
 function downloadReceipt(collection) {
   const member =
     state.members.find((item) => item.id === collection.member_id) || state.memberRecord;
-  const logoUrl = new URL("./assets/mandir-logo.jpg", window.location.href).href;
+  const logoUrl = new URL("./assets/mandir-logo-transparent.png", window.location.href).href;
   const html = `<!DOCTYPE html>
   <html>
     <head>
