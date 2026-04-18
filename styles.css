@@ -225,9 +225,23 @@ textarea {
 }
 
 .hero--portal .hero__identity {
-  align-items: center;
-  text-align: center;
+  align-items: stretch;
+  text-align: left;
   padding-left: 0;
+  min-height: unset;
+}
+
+.hero--portal .hero__branding {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+}
+
+.hero--portal .hero__branding-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .hero__logo {
@@ -244,6 +258,10 @@ textarea {
   color: var(--muted);
   font-size: 1.08rem;
   line-height: 1.7;
+}
+
+.hero--portal .hero__lead {
+  max-width: none;
 }
 
 .mandir-card {
@@ -860,6 +878,16 @@ textarea {
     align-items: center;
     text-align: center;
     padding-left: 0;
+  }
+
+  .hero--portal .hero__branding {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .hero--portal .hero__branding-text {
+    align-items: center;
+    text-align: center;
   }
 
   .hero__identity {
