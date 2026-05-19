@@ -39,6 +39,8 @@ const state = {
   dashboardDetail: null,
 };
 
+const PENDING_COLLECTIONS_START_KEY = "2025-01";
+
 let authHydrationPromise = null;
 let nextPreferredTab = null;
 
@@ -553,12 +555,11 @@ function renderDashboard() {
 
 function renderAdminDashboard() {
   const currentMonth = getCurrentMonthKey();
-  const previousMonth = getRelativeMonthKey(-1);
   const pendingRequests = state.requests.filter((request) => request.status === "Pending");
   const allRequests = state.requests
     .slice()
     .sort((left, right) => new Date(right.created_at || 0) - new Date(left.created_at || 0));
-  const pendingPayments = getPendingPaymentSummary(currentMonth, previousMonth);
+  const pendingPayments = getPendingPaymentSummary();
   const monthlyFinanceSummary = getMonthlyFinanceSummary();
 
   document.getElementById("dashboardEyebrow").textContent = "Overview";
@@ -589,15 +590,16 @@ function renderAdminDashboard() {
             <li>
               <strong>${escapeHtml(item.name)}</strong>
               <div class="record-meta">
-                Current month: ${item.currentMonthPending ? "Pending" : "Paid / No pending record"}<br />
-                Previous month: ${item.previousMonthPending ? "Pending" : "Paid / No pending record"}<br />
-                Total pending months: ${escapeHtml(String(item.totalPendingMonths))}
+                Pending months from January 2025 to ${escapeHtml(
+                  formatMonthLabel(currentMonth)
+                )}: ${escapeHtml(String(item.totalPendingMonths))}<br />
+                Pending month list: ${escapeHtml(item.pendingMonthLabels.join(", "))}
               </div>
             </li>
           `
         )
         .join("")
-    : `<li class="empty-state">No pending monthly payment record found for the current or previous month.</li>`;
+    : `<li class="empty-state">No pending monthly payment record found from January 2025 to the current month.</li>`;
 
   document.getElementById("dashboardMonthlySummaryList").innerHTML = monthlyFinanceSummary
     .map(
@@ -700,40 +702,51 @@ function getPaidMemberIdsForMonth(monthKey) {
   );
 }
 
-function getPendingPaymentSummary(currentMonth, previousMonth) {
+function getPendingPaymentSummary() {
+  const monthKeys = getMonthKeysBetween(PENDING_COLLECTIONS_START_KEY, getCurrentMonthKey());
+
   return state.members
     .map((member) => {
       const memberCollections = state.collections.filter(
         (collection) => collection.member_id === member.id
       );
-      const currentMonthStatus = getMonthPaymentStatus(memberCollections, currentMonth);
-      const previousMonthStatus = getMonthPaymentStatus(memberCollections, previousMonth);
-      const pendingMonthKeys = new Set(
-        memberCollections
-          .filter((collection) => collection.status !== "Paid" && collection.month_key)
-          .map((collection) => collection.month_key)
+      const pendingMonthKeys = monthKeys.filter(
+        (monthKey) => getMonthPaymentStatus(memberCollections, monthKey) === "Pending"
       );
-
-      if (currentMonthStatus === "Pending") {
-        pendingMonthKeys.add(currentMonth);
-      }
-
-      if (previousMonthStatus === "Pending") {
-        pendingMonthKeys.add(previousMonth);
-      }
 
       return {
         id: member.id,
         name: member.full_name,
         memberCode: member.member_code,
         phone: member.phone,
-        currentMonthPending: currentMonthStatus === "Pending",
-        previousMonthPending: previousMonthStatus === "Pending",
-        totalPendingMonths: pendingMonthKeys.size,
+        pendingMonthKeys,
+        pendingMonthLabels: pendingMonthKeys.map((monthKey) => formatMonthLabel(monthKey)),
+        totalPendingMonths: pendingMonthKeys.length,
       };
     })
-    .filter((item) => item.currentMonthPending || item.previousMonthPending)
+    .filter((item) => item.totalPendingMonths > 0)
     .sort((left, right) => right.totalPendingMonths - left.totalPendingMonths);
+}
+
+function getMonthKeysBetween(startMonthKey, endMonthKey) {
+  const keys = [];
+  const [startYear, startMonth] = `${startMonthKey}`.split("-").map(Number);
+  const [endYear, endMonth] = `${endMonthKey}`.split("-").map(Number);
+
+  let year = startYear;
+  let month = startMonth;
+
+  while (year < endYear || (year === endYear && month <= endMonth)) {
+    keys.push(`${year}-${String(month).padStart(2, "0")}`);
+    month += 1;
+
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+  }
+
+  return keys;
 }
 
 function getMonthPaymentStatus(memberCollections, monthKey) {
@@ -2671,16 +2684,14 @@ function getRequestsExportRows() {
 }
 
 function getPendingCollectionsExportRows() {
-  const currentMonth = getCurrentMonthKey();
-  const previousMonth = getRelativeMonthKey(-1);
-
-  return getPendingPaymentSummary(currentMonth, previousMonth).map((item) => ({
+  return getPendingPaymentSummary().map((item) => ({
     "Member Name": item.name || "",
     "Member ID": item.memberCode || "",
     Phone: item.phone || "",
-    "Current Month Status": item.currentMonthPending ? "Pending" : "Paid / No pending record",
-    "Previous Month Status": item.previousMonthPending ? "Pending" : "Paid / No pending record",
+    "Pending Range Start": PENDING_COLLECTIONS_START_KEY,
+    "Pending Range End": getCurrentMonthKey(),
     "Total Pending Months": item.totalPendingMonths,
+    "Pending Month List": item.pendingMonthLabels.join(", "),
   }));
 }
 
